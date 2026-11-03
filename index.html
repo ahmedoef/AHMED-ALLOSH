@@ -29987,6 +29987,96 @@ html:root body.light-mode #tab-users #permissionsGrid .permission-card::before{ 
 
 </style>
 <script id="ab-ui-shell-v3">
+/* ALLOSH BAZAR — prank sound effects, synthesised with the Web Audio API.
+   No audio files and no network: every sound is built from oscillators and noise.
+   Each effect takes (ctx, when, out) so it can play live or be rendered offline. */
+var ABSFX=(function(){
+  'use strict';
+  function noiseBuf(ctx, secs){ var n=Math.floor(ctx.sampleRate*secs), b=ctx.createBuffer(1,n,ctx.sampleRate), d=b.getChannelData(0); for(var i=0;i<n;i++) d[i]=Math.random()*2-1; return b; }
+  function env(g, t, a, peak, d){ g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+a); g.gain.exponentialRampToValueAtTime(0.0001,t+a+d); }
+
+  /* one duck: nasal sawtooth through two formants, pitch dropping, with a fast flutter */
+  function quack(ctx, t, out, pitch, len){
+    pitch=pitch||480; len=len||0.16;
+    var o1=ctx.createOscillator(), o2=ctx.createOscillator(); o1.type='sawtooth'; o2.type='square';
+    o1.frequency.setValueAtTime(pitch*1.08,t); o1.frequency.exponentialRampToValueAtTime(pitch*0.72,t+len);
+    o2.frequency.setValueAtTime(pitch*1.09,t); o2.frequency.exponentialRampToValueAtTime(pitch*0.73,t+len);
+    var f1=ctx.createBiquadFilter(); f1.type='bandpass'; f1.frequency.value=1150; f1.Q.value=4;
+    var f2=ctx.createBiquadFilter(); f2.type='bandpass'; f2.frequency.value=2600; f2.Q.value=6;
+    var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=4200;
+    var am=ctx.createGain(), lfo=ctx.createOscillator(), lfoG=ctx.createGain(); lfo.frequency.value=38; lfoG.gain.value=0.45; am.gain.value=0.55; lfo.connect(lfoG); lfoG.connect(am.gain);
+    var g=ctx.createGain(); env(g,t,0.012,0.9,len);
+    var mix=ctx.createGain(); mix.gain.value=0.5;
+    o1.connect(mix); o2.connect(mix); mix.connect(f1); mix.connect(f2); f1.connect(lp); f2.connect(lp); lp.connect(am); am.connect(g); g.connect(out);
+    [o1,o2,lfo].forEach(function(o){ o.start(t); o.stop(t+len+0.05); });
+  }
+  /* a pond of ducks: lots of overlapping quacks at different pitches */
+  function ducks(ctx, t, out, count){
+    count=count||11; var at=t;
+    for(var i=0;i<count;i++){ var p=380+Math.random()*260, l=0.11+Math.random()*0.09;
+      quack(ctx, at, out, p, l); if(Math.random()<0.45) quack(ctx, at+l+0.03, out, p*0.97, l*0.8);
+      at+=0.07+Math.random()*0.13; }
+  }
+  /* whoosh: band-passed noise sweeping across */
+  function whoosh(ctx, t, out){
+    var s=ctx.createBufferSource(); s.buffer=noiseBuf(ctx,0.35);
+    var f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.4; f.frequency.setValueAtTime(400,t); f.frequency.exponentialRampToValueAtTime(3200,t+0.22);
+    var g=ctx.createGain(); env(g,t,0.04,0.55,0.24); s.connect(f); f.connect(g); g.connect(out); s.start(t); s.stop(t+0.32);
+  }
+  /* cartoon spring */
+  function boing(ctx, t, out){
+    var o=ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(420,t+0.09); o.frequency.exponentialRampToValueAtTime(190,t+0.45);
+    var v=ctx.createOscillator(), vg=ctx.createGain(); v.frequency.value=22; vg.gain.setValueAtTime(40,t); vg.gain.exponentialRampToValueAtTime(1,t+0.45); v.connect(vg); vg.connect(o.frequency);
+    var g=ctx.createGain(); env(g,t,0.01,0.6,0.48); o.connect(g); g.connect(out); o.start(t); v.start(t); o.stop(t+0.52); v.stop(t+0.52);
+  }
+  /* slide whistle down then back up: the world turning over */
+  function slideFlip(ctx, t, out){
+    var o=ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(1500,t); o.frequency.exponentialRampToValueAtTime(260,t+0.55); o.frequency.exponentialRampToValueAtTime(900,t+0.95);
+    var v=ctx.createOscillator(), vg=ctx.createGain(); v.frequency.value=6; vg.gain.value=14; v.connect(vg); vg.connect(o.frequency);
+    var g=ctx.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.4,t+0.05); g.gain.setValueAtTime(0.4,t+0.85); g.gain.exponentialRampToValueAtTime(0.0001,t+1.05);
+    o.connect(g); g.connect(out); o.start(t); v.start(t); o.stop(t+1.1); v.stop(t+1.1);
+  }
+  /* a soft "wub" when the screen sloshes hard */
+  function wobble(ctx, t, out, amount){
+    var o=ctx.createOscillator(); o.type='sine'; var base=110+amount*60; o.frequency.setValueAtTime(base,t); o.frequency.exponentialRampToValueAtTime(base*0.6,t+0.25);
+    var g=ctx.createGain(); env(g,t,0.02,0.25*Math.min(1,amount),0.25); o.connect(g); g.connect(out); o.start(t); o.stop(t+0.3);
+  }
+  /* shy squeak, higher each time */
+  function squeak(ctx, t, out, step){
+    var f=900+step*260, o=ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(f,t); o.frequency.exponentialRampToValueAtTime(f*1.6,t+0.07); o.frequency.exponentialRampToValueAtTime(f*1.25,t+0.14);
+    var g=ctx.createGain(); env(g,t,0.008,0.35,0.15); o.connect(g); g.connect(out); o.start(t); o.stop(t+0.18);
+  }
+  /* balloon inflating: breathy noise under a rising tone */
+  function inflate(ctx, t, out, step){
+    var s=ctx.createBufferSource(); s.buffer=noiseBuf(ctx,0.4); var f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=2; f.frequency.setValueAtTime(600+step*250,t); f.frequency.linearRampToValueAtTime(1400+step*350,t+0.32);
+    var g=ctx.createGain(); env(g,t,0.04,0.35,0.3); s.connect(f); f.connect(g); g.connect(out); s.start(t); s.stop(t+0.38);
+    var o=ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(220+step*90,t); o.frequency.exponentialRampToValueAtTime(330+step*120,t+0.3);
+    var g2=ctx.createGain(); env(g2,t,0.03,0.18,0.3); o.connect(g2); g2.connect(out); o.start(t); o.stop(t+0.36);
+  }
+  /* pop! */
+  function pop(ctx, t, out){
+    var s=ctx.createBufferSource(); s.buffer=noiseBuf(ctx,0.2); var f=ctx.createBiquadFilter(); f.type='highpass'; f.frequency.value=700;
+    var g=ctx.createGain(); g.gain.setValueAtTime(1,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.16); s.connect(f); f.connect(g); g.connect(out); s.start(t); s.stop(t+0.2);
+    var o=ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(180,t); o.frequency.exponentialRampToValueAtTime(50,t+0.12);
+    var g2=ctx.createGain(); env(g2,t,0.003,0.8,0.14); o.connect(g2); g2.connect(out); o.start(t); o.stop(t+0.18);
+  }
+  /* little "done" chime when the prank is switched off */
+  function chime(ctx, t, out){
+    [[659.25,0],[987.77,0.11]].forEach(function(n){ var o=ctx.createOscillator(); o.type='sine'; o.frequency.value=n[0]; var g=ctx.createGain(); env(g,t+n[1],0.01,0.3,0.35); o.connect(g); g.connect(out); o.start(t+n[1]); o.stop(t+n[1]+0.4); });
+  }
+  var FX={ quack:quack, ducks:ducks, whoosh:whoosh, boing:boing, slideFlip:slideFlip, wobble:wobble, squeak:squeak, inflate:inflate, pop:pop, chime:chime };
+
+  /* live player: one shared context, unlocked inside the user's press */
+  var ctx=null, master=null;
+  function unlock(){
+    try{ if(!ctx){ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return false; ctx=new AC(); master=ctx.createGain(); master.gain.value=0.7;
+        var comp=ctx.createDynamicsCompressor(); master.connect(comp); comp.connect(ctx.destination); }
+      if(ctx.state==='suspended') ctx.resume(); return true; }catch(e){ return false; }
+  }
+  function play(name){ var a=[].slice.call(arguments,1); try{ if(!unlock()) return; var t=ctx.currentTime+0.01; FX[name].apply(null,[ctx,t,master].concat(a)); }catch(e){} }
+  return { FX:FX, unlock:unlock, play:play };
+})();
+
 /* ALLOSH BAZAR — UI shell v3 (presentation only).
    Sidebar chrome, header, smart home, command palette and motion.
    Reads existing data (State, rendered counters) and reuses existing controls via
@@ -30122,7 +30212,7 @@ html:root body.light-mode #tab-users #permissionsGrid .permission-card::before{ 
       var cw=card.clientWidth, ch=card.clientHeight, pad=14, best=null, lx=px-c.left, ly=py-c.top;
       for(var i=0;i<14;i++){ var nl=pad+Math.random()*Math.max(0,cw-bw-pad*2), nt=Math.max(pad, Math.min(ch-bh-pad, oy+(Math.random()*280-180)));
         var d=Math.hypot(nl+bw/2-lx, nt+bh/2-ly); if(!best || d>best.d) best={l:nl,t:nt,d:d}; if(d>160) break; }
-      dx=Math.round(best.l-ox); dy=Math.round(best.t-oy); btn.style.setProperty('--dx',dx+'px'); btn.style.setProperty('--dy',dy+'px');
+      dx=Math.round(best.l-ox); dy=Math.round(best.t-oy); btn.style.setProperty('--dx',dx+'px'); btn.style.setProperty('--dy',dy+'px'); sfx(n%3===2?'boing':'whoosh');
       n++; if(n%3===0) say(['بهزر معاك 😄','قرّب كمان…','مش هتعرف تمسكني 😏','تاني؟ 😂'][(n/3-1)%4]);
     }
     /* jelly wobble for the upside-down prank: every mouse movement pushes the whole
@@ -30130,7 +30220,7 @@ html:root body.light-mode #tab-users #permissionsGrid .permission-card::before{ 
     var wob={x:0,y:0,vx:0,vy:0,raf:0,lx:null,ly:null,lt:0,on:false};
     function wobMove(e){ var t=performance.now();
       if(wob.lx!==null){ var dt=Math.max(8,t-wob.lt), mx=(e.clientX-wob.lx)/dt*16, my=(e.clientY-wob.ly)/dt*16;
-        wob.vx+=Math.max(-30,Math.min(30,mx))*0.32; wob.vy+=Math.max(-30,Math.min(30,my))*0.32; if(!wob.raf) wob.raf=requestAnimationFrame(wobStep); }
+        wob.vx+=Math.max(-30,Math.min(30,mx))*0.32; wob.vy+=Math.max(-30,Math.min(30,my))*0.32; var sp=Math.hypot(mx,my); if(sp>14 && t-(wob.st||0)>320){ wob.st=t; sfx('wobble', Math.min(1.6, sp/22)); } if(!wob.raf) wob.raf=requestAnimationFrame(wobStep); }
       wob.lx=e.clientX; wob.ly=e.clientY; wob.lt=t; }
     function wobStep(){ wob.raf=0; if(!wob.on) return;
       wob.vx+=-wob.x*0.11; wob.vy+=-wob.y*0.11; wob.vx*=0.84; wob.vy*=0.84; wob.x+=wob.vx; wob.y+=wob.vy;
@@ -30140,17 +30230,18 @@ html:root body.light-mode #tab-users #permissionsGrid .permission-card::before{ 
       if(Math.abs(wob.x)+Math.abs(wob.y)+Math.abs(wob.vx)+Math.abs(wob.vy)>0.05) wob.raf=requestAnimationFrame(wobStep); }
     function wobbleOn(){ if(reduceM) return; wob.on=true; wob.x=wob.y=wob.vx=wob.vy=0; wob.lx=null; document.addEventListener('mousemove',wobMove,{passive:true}); setTimeout(function(){ if(wob.on) lp.classList.add('ab-wobbling'); }, 600); }
     function wobbleOff(){ wob.on=false; cancelAnimationFrame(wob.raf); wob.raf=0; document.removeEventListener('mousemove',wobMove); lp.classList.remove('ab-wobbling'); ['--wx','--wy','--wsk','--wr'].forEach(function(v){ lp.style.removeProperty(v); }); }
+    function sfx(name){ try{ if(typeof ABSFX==='undefined') return; if(name==='unlock') return ABSFX.unlock(); ABSFX.play.apply(null, arguments); }catch(e){} }
     var PRANKS={
       run:{ pc:true, blocks:true, motion:true, start:function(){ dx=dy=n=0; }, poke:function(x,y){ dodge(x,y); }, stop:function(){ btn.style.removeProperty('--dx'); btn.style.removeProperty('--dy'); } },
-      flip:{ pc:true, start:function(){ setTimeout(function(){ say('الدنيا اتقلبت؟ 🙃', logo); }, 700); wobbleOn(); }, stop:function(){ wobbleOff(); } },
-      shy:{ pc:true, blocks:true, start:function(){ n=0; btn.style.setProperty('--s','1'); }, poke:function(){ n++; var sc=Math.max(.25, 1-n*.18); btn.style.setProperty('--s', String(sc)); if(n===2) say('مكسوف 🙈'); if(n===5) say('سيبني في حالي 😳'); }, stop:function(){ btn.style.removeProperty('--s'); } },
+      flip:{ pc:true, start:function(){ sfx('slideFlip'); setTimeout(function(){ say('الدنيا اتقلبت؟ 🙃', logo); }, 700); wobbleOn(); }, stop:function(){ wobbleOff(); } },
+      shy:{ pc:true, blocks:true, start:function(){ n=0; btn.style.setProperty('--s','1'); }, poke:function(){ n++; sfx('squeak', Math.min(n,6)); var sc=Math.max(.25, 1-n*.18); btn.style.setProperty('--s', String(sc)); if(n===2) say('مكسوف 🙈'); if(n===5) say('سيبني في حالي 😳'); }, stop:function(){ btn.style.removeProperty('--s'); } },
       /* phone-only */
       giant:{ phone:true, blocks:true, start:function(){ n=0; btn.style.setProperty('--g','1'); },
-        poke:function(){ n++; var steps=[1,1.3,1.75,2.35,3.1]; if(n<steps.length){ btn.style.setProperty('--g', String(steps[n])); if(n===2) say('بيكبر… 😳'); if(n===4) say('هيفرقع! 💥'); }
-          else { btn.style.setProperty('--g','1'); say('خلاص رجع 😄'); setTimeout(function(){ stop(false); }, 50); } },
+        poke:function(){ n++; var steps=[1,1.3,1.75,2.35,3.1]; if(n<steps.length){ sfx('inflate', n); btn.style.setProperty('--g', String(steps[n])); if(n===2) say('بيكبر… 😳'); if(n===4) say('هيفرقع! 💥'); }
+          else { sfx('pop'); setTimeout(function(){ sfx('boing'); }, 180); btn.style.setProperty('--g','1'); say('خلاص رجع 😄'); setTimeout(function(){ stop(false); }, 50); } },
         stop:function(){ btn.style.removeProperty('--g'); } },
       buzz:{ phone:true, blocks:true, start:function(){ n=0; },
-        poke:function(){ n++; try{ if(navigator.vibrate) navigator.vibrate([90,60,90,60,180]); }catch(e){}
+        poke:function(){ n++; sfx('ducks', 9+n*2); try{ if(navigator.vibrate) navigator.vibrate([90,60,90,60,180]); }catch(e){}
           if(!reduceM){ card.classList.remove('ab-shake'); void card.offsetWidth; card.classList.add('ab-shake'); }
           say(['الموبايل بيرن 📳','اهدا شوية 😂','آخر مرة… 🤭'][Math.min(n-1,2)]);
           if(n>=3) setTimeout(function(){ stop(false); }, 900); },
@@ -30171,7 +30262,7 @@ html:root body.light-mode #tab-users #permissionsGrid .permission-card::before{ 
     function stop(byUser){
       if(!active) return; var k=active; active=null; clearTimeout(endTimer);
       lp.classList.remove('ab-prank-'+k); PRANKS[k].stop();
-      if(byUser) say('خلاص بطّلنا 😅', logo);
+      if(byUser){ sfx('chime'); say('خلاص بطّلنا 😅', logo); }
     }
     // a double tap on the logo ends the prank
     var taps=0, tapTimer=0;
@@ -30179,7 +30270,9 @@ html:root body.light-mode #tab-users #permissionsGrid .permission-card::before{ 
     logo.addEventListener('click', function(){ taps++; clearTimeout(tapTimer); if(taps>=2){ taps=0; if(active||armed){ armed=false; logo.classList.remove('ab-wiggle'); void logo.offsetWidth; logo.classList.add('ab-wiggle'); if(active) stop(true); } return; } tapTimer=setTimeout(function(){ taps=0; }, 700); });
     // the prank waits on the screen and springs on the first press of «دخول النظام»
     var armed=false, swallow=false;
-    function trigger(x,y){ armed=false; start(); if(active && PRANKS[active].poke) PRANKS[active].poke(x,y); }
+    // iOS only unlocks audio on touchend/click, so unlock there too
+    lp.addEventListener('touchend', function(){ sfx('unlock'); }, {passive:true}); lp.addEventListener('click', function(){ sfx('unlock'); }, true);
+    function trigger(x,y){ armed=false; sfx('unlock'); start(); if(active && PRANKS[active].poke) PRANKS[active].poke(x,y); }
     btn.addEventListener('pointerenter', function(e){ if(e.pointerType==='mouse' && active && PRANKS[active].poke) PRANKS[active].poke(e.clientX, e.clientY); });
     btn.addEventListener('pointerdown', function(e){
       if(armed && !active){ e.preventDefault(); swallow=true; trigger(e.clientX, e.clientY); return; }
