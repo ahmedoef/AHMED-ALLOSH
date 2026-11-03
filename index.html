@@ -29349,6 +29349,18 @@ html:root body .tab-btn[data-tab="products"]{order:21}html:root body .tab-btn[da
 html:root body .tab-btn[data-tab="empdata"]{order:31}html:root body .tab-btn[data-tab="leaves"]{order:32}html:root body .tab-btn[data-tab="penalties"]{order:33}html:root body .tab-btn[data-tab="incentives"]{order:34}
 html:root body .tab-btn[data-tab="users"]{order:41}html:root body .tab-btn[data-tab="user-journey"]{order:42}html:root body .tab-btn[data-tab="system"]{order:43}html:root body .tab-btn[data-tab="archive"]{order:44}
 html:root body .ab-nav-group[data-g="ops"]{order:10}html:root body .ab-nav-group[data-g="stock"]{order:20}html:root body .ab-nav-group[data-g="hr"]{order:30}html:root body .ab-nav-group[data-g="admin"]{order:40}
+/* light sidebar (light mode only): white rail, bold black text */
+html:root body.light-mode .tabs-wrapper{ --ab-rail:#FFFFFF; --ab-rail-line:var(--ab-line); --ab-rail-text:#121419; --ab-rail-dim:#4A4F5B; border-left:1px solid var(--ab-line) !important; box-shadow:1px 0 0 rgba(18,20,25,.02), -8px 0 24px -18px rgba(18,20,25,.18) !important; }
+html:root body.light-mode .ab-side-brand b{ color:#121419; font-weight:700; }
+html:root body.light-mode .ab-side-brand small{ color:#5A5F6B; }
+html:root body.light-mode .ab-nav-group{ color:#5A5F6B; font-weight:600; }
+html:root body.light-mode .tab-btn, html:root body.light-mode .ab-home-btn{ color:#121419 !important; font-weight:600 !important; }
+html:root body.light-mode .tab-btn > span:first-child, html:root body.light-mode .ab-home-btn > span:first-child{ color:#2B2F38; }
+html:root body.light-mode .tab-btn:hover, html:root body.light-mode .ab-home-btn:hover{ color:#000 !important; background:#F1F2F5 !important; }
+html:root body.light-mode .tab-btn:hover > span:first-child, html:root body.light-mode .ab-home-btn:hover > span:first-child{ color:var(--ab-red); }
+html:root body.light-mode .tab-btn.active, html:root body.light-mode .ab-home-btn.active{ color:#fff !important; font-weight:700 !important; }
+html:root body.light-mode .tab-btn.active > span:first-child, html:root body.light-mode .ab-home-btn.active > span:first-child{ color:#fff; }
+html:root body.light-mode .ab-nav-pill{ box-shadow:0 8px 18px -10px rgba(200,16,46,.6), inset 0 1px 0 rgba(255,255,255,.14); }
 
 @media (min-width:1101px){ html:root body #dashboard{ padding-right:var(--ab-side); } }
 @media (max-width:1100px){
