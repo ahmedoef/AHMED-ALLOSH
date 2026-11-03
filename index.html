@@ -29265,7 +29265,12 @@ html:root body #loginPage #loginBtn{ transition:transform .3s var(--ab-ease), ba
 /* 1. runaway button */
 html:root body #loginPage.ab-prank-run #loginBtn, html:root body #loginPage.ab-prank-run #loginBtn:active{ transform:translate(var(--dx,0px),var(--dy,0px)) !important; }
 /* 2. upside-down form */
-html:root body #loginPage.ab-prank-flip > .glass-card{ transform:rotate(180deg) !important; }
+html:root body #loginPage.ab-prank-flip > .glass-card{ transform:translate(var(--wx,0px),var(--wy,0px)) skewX(var(--wsk,0deg)) rotate(calc(180deg + var(--wr,0deg))) !important; }
+/* the red panel's text sloshes too; the «ع» logo stays put so a double tap can always end the prank */
+html:root body #loginPage.ab-prank-flip .ab-login-hero, html:root body #loginPage.ab-prank-flip .ab-login-modules{ transform:translate(calc(var(--wx,0px)*.8),calc(var(--wy,0px)*.8)) skewX(calc(var(--wsk,0deg)*.8)) rotate(calc(var(--wr,0deg)*-1)); }
+html:root body #loginPage.ab-prank-flip.ab-wobbling > .glass-card, html:root body #loginPage.ab-prank-flip.ab-wobbling .ab-login-hero, html:root body #loginPage.ab-prank-flip.ab-wobbling .ab-login-modules{ transition:none !important; }
+html:root body #loginPage .ab-login-hero{ transition:transform .45s var(--ab-ease); }
+html:root body #loginPage.ab-prank-flip{ overflow:hidden !important; }
 /* phone: giant button */
 html:root body #loginPage.ab-prank-giant{ overflow-x:hidden !important; }
 html:root body #loginPage.ab-prank-giant #loginBtn, html:root body #loginPage.ab-prank-giant #loginBtn:active{ transform:scale(var(--g,1)) !important; z-index:20; transition:transform .35s cubic-bezier(.34,1.56,.64,1) !important; }
@@ -30120,9 +30125,24 @@ html:root body.light-mode #tab-users #permissionsGrid .permission-card::before{ 
       dx=Math.round(best.l-ox); dy=Math.round(best.t-oy); btn.style.setProperty('--dx',dx+'px'); btn.style.setProperty('--dy',dy+'px');
       n++; if(n%3===0) say(['بهزر معاك 😄','قرّب كمان…','مش هتعرف تمسكني 😏','تاني؟ 😂'][(n/3-1)%4]);
     }
+    /* jelly wobble for the upside-down prank: every mouse movement pushes the whole
+       screen the same way, and a damped spring pulls it back to rest */
+    var wob={x:0,y:0,vx:0,vy:0,raf:0,lx:null,ly:null,lt:0,on:false};
+    function wobMove(e){ var t=performance.now();
+      if(wob.lx!==null){ var dt=Math.max(8,t-wob.lt), mx=(e.clientX-wob.lx)/dt*16, my=(e.clientY-wob.ly)/dt*16;
+        wob.vx+=Math.max(-30,Math.min(30,mx))*0.32; wob.vy+=Math.max(-30,Math.min(30,my))*0.32; if(!wob.raf) wob.raf=requestAnimationFrame(wobStep); }
+      wob.lx=e.clientX; wob.ly=e.clientY; wob.lt=t; }
+    function wobStep(){ wob.raf=0; if(!wob.on) return;
+      wob.vx+=-wob.x*0.11; wob.vy+=-wob.y*0.11; wob.vx*=0.84; wob.vy*=0.84; wob.x+=wob.vx; wob.y+=wob.vy;
+      wob.x=Math.max(-46,Math.min(46,wob.x)); wob.y=Math.max(-34,Math.min(34,wob.y));
+      var sk=Math.max(-9,Math.min(9,wob.vx*0.55)), rot=Math.max(-4,Math.min(4,wob.vx*0.18));
+      lp.style.setProperty('--wx',wob.x.toFixed(2)+'px'); lp.style.setProperty('--wy',wob.y.toFixed(2)+'px'); lp.style.setProperty('--wsk',sk.toFixed(2)+'deg'); lp.style.setProperty('--wr',rot.toFixed(2)+'deg');
+      if(Math.abs(wob.x)+Math.abs(wob.y)+Math.abs(wob.vx)+Math.abs(wob.vy)>0.05) wob.raf=requestAnimationFrame(wobStep); }
+    function wobbleOn(){ if(reduceM) return; wob.on=true; wob.x=wob.y=wob.vx=wob.vy=0; wob.lx=null; document.addEventListener('mousemove',wobMove,{passive:true}); setTimeout(function(){ if(wob.on) lp.classList.add('ab-wobbling'); }, 600); }
+    function wobbleOff(){ wob.on=false; cancelAnimationFrame(wob.raf); wob.raf=0; document.removeEventListener('mousemove',wobMove); lp.classList.remove('ab-wobbling'); ['--wx','--wy','--wsk','--wr'].forEach(function(v){ lp.style.removeProperty(v); }); }
     var PRANKS={
       run:{ pc:true, blocks:true, motion:true, start:function(){ dx=dy=n=0; }, poke:function(x,y){ dodge(x,y); }, stop:function(){ btn.style.removeProperty('--dx'); btn.style.removeProperty('--dy'); } },
-      flip:{ pc:true, start:function(){ setTimeout(function(){ say('الدنيا اتقلبت؟ 🙃', logo); }, 700); }, stop:function(){} },
+      flip:{ pc:true, start:function(){ setTimeout(function(){ say('الدنيا اتقلبت؟ 🙃', logo); }, 700); wobbleOn(); }, stop:function(){ wobbleOff(); } },
       shy:{ pc:true, blocks:true, start:function(){ n=0; btn.style.setProperty('--s','1'); }, poke:function(){ n++; var sc=Math.max(.25, 1-n*.18); btn.style.setProperty('--s', String(sc)); if(n===2) say('مكسوف 🙈'); if(n===5) say('سيبني في حالي 😳'); }, stop:function(){ btn.style.removeProperty('--s'); } },
       /* phone-only */
       giant:{ phone:true, blocks:true, start:function(){ n=0; btn.style.setProperty('--g','1'); },
@@ -30156,7 +30176,7 @@ html:root body.light-mode #tab-users #permissionsGrid .permission-card::before{ 
     // a double tap on the logo ends the prank
     var taps=0, tapTimer=0;
     // a double tap on the logo ends the prank (or cancels it before it starts)
-    logo.addEventListener('click', function(){ taps++; clearTimeout(tapTimer); if(taps>=2){ taps=0; if(active||armed){ armed=false; logo.classList.remove('ab-wiggle'); void logo.offsetWidth; logo.classList.add('ab-wiggle'); if(active) stop(true); } return; } tapTimer=setTimeout(function(){ taps=0; }, 450); });
+    logo.addEventListener('click', function(){ taps++; clearTimeout(tapTimer); if(taps>=2){ taps=0; if(active||armed){ armed=false; logo.classList.remove('ab-wiggle'); void logo.offsetWidth; logo.classList.add('ab-wiggle'); if(active) stop(true); } return; } tapTimer=setTimeout(function(){ taps=0; }, 700); });
     // the prank waits on the screen and springs on the first press of «دخول النظام»
     var armed=false, swallow=false;
     function trigger(x,y){ armed=false; start(); if(active && PRANKS[active].poke) PRANKS[active].poke(x,y); }
