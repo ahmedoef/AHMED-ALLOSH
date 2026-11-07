@@ -37999,6 +37999,12 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
   #tab-pricing .pp-scanbar .pp-scan{ flex:1 1 100%; }
   #tab-pricing .pp-scanbar .pp-btn{ flex:1; }
 }
+#tab-pricing .pp-gal{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+#tab-pricing .pp-galit{ display:flex; flex-direction:column; gap:5px; align-items:center; padding:6px; border-radius:10px; border:2px solid transparent; background:var(--ab-fill,rgba(118,118,128,.1)); cursor:pointer; }
+#tab-pricing .pp-galit input{ position:absolute; opacity:0; pointer-events:none; }
+#tab-pricing .pp-galit b{ font-size:12.5px; }
+#tab-pricing .pp-galit.on{ border-color:var(--ab-red,#c8102e); }
+@media (max-width:420px){ #tab-pricing .pp-gal{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
 
 </style>
 <script id="pp-js">
@@ -38038,7 +38044,7 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
 
   /* ---------------- settings ---------------- */
   var DEF={
-    design:{ title:'عرض خاص جدا من علوش', showTitle:true, underline:true, showQr:true, qrMode:'barcode', qrLink:'', qrLabel:'SCAN ME', currency:'ج', oldLabel:'بدل', qtyWord:'بـ', border:1.2, borderColor:'#111111', ink:'#111111', defaultSize:'large', showBarcode:false },
+    design:{ title:'عرض خاص جدا من علوش', showTitle:true, underline:true, showQr:true, qrMode:'barcode', qrLink:'', qrLabel:'SCAN ME', currency:'ج', oldLabel:'بدل', qtyWord:'بـ', border:1.2, borderColor:'#111111', ink:'#111111', defaultSize:'large', showBarcode:false, style:'classic' },
     fonts:{ family:'Cairo', titleW:900, nameW:800, priceW:900, title:100, name:100, price:100, old:100, qty:100 },
     rules:{ adjust:'none', adjustValue:0, round:'none', qtyMode:'unit', hideZeroDecimals:true }
   };
@@ -38082,47 +38088,102 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
 
   /* ---------------- the tag (same markup for preview and print) ---------------- */
   var SIZES={ large:{ l:'كبير — A4 (واحدة في الورقة)', page:'A4 landscape', per:1, w:281, h:194, fs:9.6 }, half:{ l:'نص — A5 (اتنين في الورقة)', page:'A4 portrait', per:2, w:196, h:136, fs:6.7 }, shelf:{ l:'شيلف — صغيرة (8 في الورقة)', page:'A4 portrait', per:8, w:96, h:66, fs:3.25 } };
+  var STYLES=[['classic','كلاسيك'],['burst','نجمة العرض'],['ribbon','شريط'],['bold','عريض'],['dots','منقّط'],['minimal','بسيط']];
+  function styleOf(t){ var k=(t&&t.style)||settings.design.style||'classic'; return STYLES.some(function(x){ return x[0]===k; })?k:'classic'; }
+  function styleSel(id, v){ return '<select id="'+id+'" class="pp-in">'+STYLES.map(function(x){ return '<option value="'+x[0]+'"'+(x[0]===v?' selected':'')+'>'+x[1]+'</option>'; }).join('')+'</select>'; }
+  /* black line-art pieces (SVG, currentColor) */
+  var SVG={
+    cornerC:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor"><path d="M2 38V11Q2 2 11 2H38" stroke-width="2.4"/><path d="M8 38V15Q8 8 15 8H38" stroke-width="1"/><circle cx="15" cy="15" r="2.4" fill="currentColor" stroke="none"/><path d="M26 2l3 3l-3 3l-3-3z M2 26l3 3l-3 3l-3-3z" fill="currentColor" stroke="none"/></svg>',
+    cornerD:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="8" stroke-width="1.4"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/><path d="M24 12H38M12 24V38" stroke-width="1.4" stroke-dasharray="2 2.5"/></svg>',
+    spark:'<svg viewBox="0 0 20 20"><path d="M10 0C11 7 13 9 20 10C13 11 11 13 10 20C9 13 7 11 0 10C7 9 9 7 10 0Z" fill="currentColor"/></svg>',
+    hatch:'<svg viewBox="0 0 40 40" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 8L8 0M0 16L16 0M0 24L24 0M0 32L32 0M0 40L40 0"/></svg>'
+  };
+  SVG.burst=(function(){ var pts=[], n=28; for(var i=0;i<n*2;i++){ var a=Math.PI*i/n, rr=i%2?42:50; pts.push((50+rr*Math.cos(a)).toFixed(2)+','+(50+rr*Math.sin(a)).toFixed(2)); }
+    return '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="'+pts.join(' ')+'" fill="#fff" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="50" cy="50" r="37" fill="none" stroke="currentColor" stroke-width=".7" stroke-dasharray="1.6 1.8"/></svg>'; })();
+  function decoHtml(st, hasQr){
+    var c=function(svg,pos){ return '<i class="pp-dc pp-cn '+pos+'" aria-hidden="true">'+svg+'</i>'; };
+    if(st==='classic') return (hasQr?'':c(SVG.cornerC,'tl'))+c(SVG.cornerC,'tr')+c(SVG.cornerC,'bl')+c(SVG.cornerC,'br');
+    if(st==='dots') return (hasQr?'':c(SVG.cornerD,'tl'))+c(SVG.cornerD,'tr')+c(SVG.cornerD,'bl')+c(SVG.cornerD,'br');
+    if(st==='ribbon') return '<i class="pp-dc pp-hatch bl" aria-hidden="true">'+SVG.hatch+'</i><i class="pp-dc pp-hatch br" aria-hidden="true">'+SVG.hatch+'</i>';
+    if(st==='bold') return '<i class="pp-dc pp-cut bl" aria-hidden="true"></i><i class="pp-dc pp-cut br" aria-hidden="true"></i>';
+    return '';
+  }
   function tagHtml(t, size){
-    var d=settings.design, f=settings.fonts, z=SIZES[size]||SIZES.large;
+    var d=settings.design, f=settings.fonts, z=SIZES[size]||SIZES.large, st=styleOf(t);
     var qty=Math.max(1, Math.round(num(t.qty)||1)), old=num(t.oldPrice);
     var qrText=d.qrMode==='link'?(d.qrLink||''):String(t.barcode||'');
     var qr=d.showQr&&qrText?qrSvg(qrText):'';
-    var pLen=money(t.price).length, pl=pLen<=2?1.12:pLen===3?1:pLen===4?0.84:0.7; if(old>0&&qty>1) pl*=0.92;
+    var pLen=money(t.price).length, pl=pLen<=2?1.1:pLen===3?0.98:pLen===4?0.82:0.68; if(old>0) pl*=0.94; if(qty>1) pl*=0.94;
     var nameLen=String(t.name||'').length, nameScale=nameLen>46?0.72:nameLen>34?0.84:1;
     var style='--pp-fs:'+z.fs+'mm;--pp-ink:'+esc(d.ink||'#111')+';--pp-bc:'+esc(d.borderColor||'#111')+';--pp-bw:'+num(d.border)+'mm;font-family:\''+esc(f.family)+'\',Cairo,Tahoma,sans-serif;'+
       '--pp-pl:'+pl+';--pp-t:'+num(f.title)/100+';--pp-n:'+(num(f.name)/100*nameScale)+';--pp-p:'+num(f.price)/100+';--pp-o:'+num(f.old)/100+';--pp-q:'+num(f.qty)/100+';--pp-tw:'+f.titleW+';--pp-nw:'+f.nameW+';--pp-pw:'+f.priceW+';';
-    return '<div class="pp-tag sz-'+size+(d.showQr&&qr?' has-qr':'')+'" style="'+style+'">'+
+    var spark=st==='burst'?'<i class="pp-sp" aria-hidden="true">'+SVG.spark+'</i>':'';
+    return '<div class="pp-tag sz-'+size+' st-'+st+(qr?' has-qr':'')+'" style="'+style+'">'+decoHtml(st, !!qr)+
       '<div class="pp-tag-top">'+(qr?'<div class="pp-qr">'+qr+(d.qrLabel?'<span>'+esc(d.qrLabel)+'</span>':'')+'</div>':'')+
-        (d.showTitle?'<div class="pp-title'+(d.underline?' ul':'')+'">'+esc(d.title)+'</div>':'')+'</div>'+
-      '<div class="pp-name">'+esc(t.name||'—')+'</div>'+
+        (d.showTitle?'<div class="pp-title'+(d.underline?' ul':'')+'">'+spark+'<span>'+esc(d.title)+'</span>'+spark+'</div>':'')+'</div>'+
+      '<div class="pp-name"><span>'+esc(t.name||'—')+'</span>'+(st==='classic'||st==='dots'?'<i class="pp-sep" aria-hidden="true">'+(st==='dots'?SVG.spark:'')+'</i>':'')+'</div>'+
       '<div class="pp-bottom">'+
-        (old>0?'<div class="pp-old"><span>'+esc(d.oldLabel)+'</span><b>'+esc(money(old))+'</b></div>':'<div class="pp-old empty"></div>')+
-        '<div class="pp-cur">'+esc(d.currency)+'</div><div class="pp-price">'+esc(money(t.price))+'</div>'+
-        (qty>1?'<div class="pp-qty"><span>'+esc(d.qtyWord)+'</span><b>'+qty+'</b></div>':'<div class="pp-qty empty"></div>')+
+        (old>0?'<div class="pp-old"><b>'+esc(money(old))+'</b><span>'+esc(d.oldLabel)+'</span></div>':'')+
+        '<div class="pp-main">'+(st==='burst'?'<i class="pp-burst" aria-hidden="true">'+SVG.burst+'</i>':'')+'<span class="pp-cur">'+esc(d.currency)+'</span><span class="pp-price">'+esc(money(t.price))+'</span></div>'+
+        (qty>1?'<div class="pp-qty"><span>'+esc(d.qtyWord)+'</span><b>'+qty+'</b></div>':'')+
       '</div>'+(d.showBarcode?'<div class="pp-bc">'+esc(t.barcode||'')+'</div>':'')+'</div>';
   }
   var TAG_CSS=[
-    '.pp-tag{box-sizing:border-box;position:relative;width:calc(var(--pp-w)*1mm);height:calc(var(--pp-h)*1mm);font-size:var(--pp-fs);color:var(--pp-ink);background:#fff;border:var(--pp-bw) solid var(--pp-bc);display:flex;flex-direction:column;direction:rtl;overflow:hidden;line-height:1.15}',
+    '.pp-tag{box-sizing:border-box;position:relative;width:calc(var(--pp-w)*1mm);height:calc(var(--pp-h)*1mm);font-size:var(--pp-fs);color:var(--pp-ink);background:#fff;border:var(--pp-bw) solid var(--pp-bc);display:flex;flex-direction:column;direction:rtl;overflow:hidden;line-height:1.15;-webkit-print-color-adjust:exact;print-color-adjust:exact}',
     '.pp-tag.sz-large{--pp-w:281;--pp-h:194}.pp-tag.sz-half{--pp-w:196;--pp-h:136}.pp-tag.sz-shelf{--pp-w:96;--pp-h:66}',
-    '.pp-tag-top{position:relative;display:flex;align-items:center;justify-content:center;min-height:2.6em;padding:.45em .6em .1em}',
-    '.pp-tag.has-qr .pp-tag-top{padding-left:3.6em;padding-right:3.6em}',
-    '.pp-qr{position:absolute;left:.45em;top:.35em;width:2.9em;display:flex;flex-direction:column;align-items:center;gap:.08em}',
+    '.pp-tag>*{position:relative;z-index:1}.pp-tag>.pp-dc{position:absolute;z-index:0}',
+    '.pp-tag-top{display:flex;align-items:center;justify-content:center;min-height:2.6em;padding:.5em 3.4em .1em}',
+    '.pp-tag.has-qr .pp-tag-top{padding-left:3.7em;padding-right:3.7em}',
+    '.pp-qr{position:absolute;left:.5em;top:.4em;width:2.9em;display:flex;flex-direction:column;align-items:center;gap:.08em;z-index:2}',
     '.pp-qr svg{width:2.9em;height:2.9em;display:block;border:.04em solid #999;padding:.08em;background:#fff}',
-    '.pp-qr span{font-family:Georgia,serif;font-weight:700;font-size:.3em;letter-spacing:.02em;white-space:nowrap}',
-    '.pp-title{font-size:calc(1.3em*var(--pp-t));font-weight:var(--pp-tw);text-align:center;white-space:nowrap;padding-bottom:.08em}',
-    '.pp-title.ul{border-bottom:.09em solid currentColor}',
-    '.pp-name{flex:0 0 auto;display:flex;align-items:center;justify-content:center;text-align:center;font-size:calc(1.42em*var(--pp-n));font-weight:var(--pp-nw);padding:.25em .5em .3em;min-height:2.5em;border-bottom:var(--pp-bw) solid var(--pp-bc);line-height:1.2;overflow:hidden}',
-    '.pp-bottom{flex:1 1 auto;display:flex;direction:ltr;align-items:center;justify-content:center;gap:.3em;padding:.2em .6em .3em;min-height:0}',
-    '.pp-price{font-size:calc(8.4em*var(--pp-p)*var(--pp-pl,1));font-weight:var(--pp-pw);line-height:.82;letter-spacing:-.03em;font-family:Arial,"Arial Black",Cairo,sans-serif;font-variant-numeric:lining-nums}',
-    '.pp-cur{font-size:calc(1.6em*var(--pp-p));font-weight:800;align-self:flex-start;margin-top:1.6em}',
-    '.pp-qty{display:flex;align-items:flex-end;gap:.15em;margin-left:.45em;align-self:center;margin-top:3.2em}',
-    '.pp-qty b{font-size:calc(3.6em*var(--pp-q));font-weight:900;line-height:.85;font-family:Arial,Cairo,sans-serif}',
-    '.pp-qty span{font-size:calc(1.15em*var(--pp-q));font-weight:800;margin-bottom:.35em}',
-    '.pp-old{display:flex;flex-direction:column;align-items:center;margin-right:.6em;font-size:calc(1.45em*var(--pp-o));font-weight:800}',
-    '.pp-old span{font-size:1.25em}.pp-old b{position:relative;font-size:1.7em;font-family:Arial,Cairo,sans-serif;padding:0 .12em}',
-    '.pp-old b::after{content:"";position:absolute;left:-.1em;right:-.1em;top:50%;border-top:.07em solid currentColor;transform:rotate(-24deg)}',
-    '.pp-old.empty,.pp-qty.empty{display:none}',
-    '.pp-bc{position:absolute;bottom:.15em;right:.4em;font-size:.38em;direction:ltr;font-family:monospace}'
+    '.pp-qr span{font-family:Georgia,serif;font-weight:700;font-size:.3em;letter-spacing:.02em;white-space:nowrap;background:#fff;padding:0 .2em}',
+    '.pp-title{display:flex;align-items:center;gap:.35em;font-size:calc(1.3em*var(--pp-t));font-weight:var(--pp-tw);text-align:center;white-space:nowrap}',
+    '.pp-title.ul span{border-bottom:.09em solid currentColor;padding-bottom:.05em}',
+    '.pp-name{flex:0 0 auto;display:flex;align-items:center;justify-content:center;text-align:center;font-size:calc(1.42em*var(--pp-n));font-weight:var(--pp-nw);padding:.25em .9em .35em;min-height:2.5em;border-bottom:var(--pp-bw) solid var(--pp-bc);line-height:1.2}',
+    /* one line: old · ج · price · بـ · qty, all on the same baseline */
+    '.pp-bottom{flex:1 1 auto;display:flex;direction:ltr;align-items:center;justify-content:center;gap:.7em;padding:.25em .8em .45em;min-height:0}',
+    '.pp-bottom,.pp-main{align-items:baseline}.pp-bottom{flex-wrap:wrap;align-content:center}',
+    '.pp-main{position:relative;display:flex;gap:.12em;font-size:calc(8.2em*var(--pp-p)*var(--pp-pl,1));line-height:1}',
+    '.pp-price{font-weight:var(--pp-pw);letter-spacing:-.03em;font-family:Arial,"Arial Black",Cairo,sans-serif;font-variant-numeric:lining-nums;line-height:.9}',
+    '.pp-cur{font-size:.36em;font-weight:900;line-height:1}',
+    '.pp-qty,.pp-old{display:flex;align-items:baseline;gap:.25em;font-weight:900;font-size:calc(2.6em*var(--pp-q)*var(--pp-pl,1))}',
+    '.pp-old{font-size:calc(2.1em*var(--pp-o)*var(--pp-pl,1))}',
+    '.pp-qty b,.pp-old b{font-family:Arial,Cairo,sans-serif;font-weight:900;line-height:1}',
+    '.pp-qty span,.pp-old span{font-size:.55em;font-weight:800}',
+    '.pp-old b{position:relative;padding:0 .08em}',
+    '.pp-old b::after{content:"";position:absolute;left:-.08em;right:-.08em;top:52%;border-top:.08em solid currentColor;transform:rotate(-22deg)}',
+    '.pp-bc{position:absolute;bottom:.15em;right:.6em;font-size:.38em;direction:ltr;font-family:monospace}',
+    /* classic */
+    '.st-classic::before{content:"";position:absolute;inset:.3em;border:.05em solid currentColor;z-index:0;pointer-events:none}',
+    '.pp-cn{width:2.3em;height:2.3em;color:currentColor}.pp-cn svg{width:100%;height:100%;display:block}',
+    '.pp-cn.tl{top:.12em;left:.12em}.pp-cn.tr{top:.12em;right:.12em;transform:scaleX(-1)}.pp-cn.bl{bottom:.12em;left:.12em;transform:scaleY(-1)}.pp-cn.br{bottom:.12em;right:.12em;transform:scale(-1,-1)}',
+    '.st-classic .pp-name,.st-dots .pp-name{border-bottom:0;margin:0 1.6em}',
+    '.st-classic .pp-name::after{content:"";position:absolute;left:0;right:0;bottom:0;border-top:.12em double currentColor;height:.12em;border-bottom:.04em solid currentColor}',
+    '.pp-sep{position:absolute;left:50%;bottom:0;width:.5em;height:.5em;transform:translate(-50%,50%) rotate(45deg);background:currentColor;box-shadow:0 0 0 .14em #fff;z-index:2}',
+    /* dots */
+    '.st-dots::before{content:"";position:absolute;inset:.35em;border:.07em dashed currentColor;border-radius:.4em;z-index:0;pointer-events:none}',
+    '.st-dots .pp-name::after{content:"";position:absolute;left:0;right:0;bottom:0;border-top:.1em dotted currentColor}',
+    '.st-dots .pp-sep{width:.9em;height:.9em;background:#fff;box-shadow:none;transform:translate(-50%,50%);display:flex}.st-dots .pp-sep svg{width:100%;height:100%}',
+    '.st-dots .pp-cn{width:2em;height:2em}',
+    /* burst */
+    '.st-burst{border-width:calc(var(--pp-bw)*1.8)}',
+    '.pp-sp{display:inline-block;width:.75em;height:.75em;flex:none}.pp-sp svg{width:100%;height:100%;display:block}',
+    '.pp-burst{position:absolute;left:-.75em;right:-.6em;top:-.28em;bottom:-.3em;z-index:-1;pointer-events:none}'+'.st-burst .pp-main{font-size:calc(7em*var(--pp-p)*var(--pp-pl,1))}.st-burst .pp-main{margin:0 .65em 0 .8em}.pp-burst svg{width:100%;height:100%;display:block}',
+    '.st-burst .pp-main{z-index:0}',
+    /* ribbon */
+    '.st-ribbon .pp-title span{background:currentColor;padding:.12em 1.4em .18em;clip-path:polygon(0 0,100% 0,95% 50%,100% 100%,0 100%,5% 50%);border:0}',
+    '.st-ribbon .pp-title span{color:#000}.st-ribbon .pp-title span{-webkit-text-fill-color:#fff}',
+    '.st-ribbon .pp-name{border-bottom-width:calc(var(--pp-bw)*2.2);margin:0 2em}',
+    '.pp-hatch{width:4.4em;height:4.4em;bottom:0;clip-path:polygon(0 0,0 100%,100% 100%)}.pp-hatch svg{width:100%;height:100%;display:block}',
+    '.pp-hatch.bl{left:0}.pp-hatch.br{right:0;transform:scaleX(-1)}',
+    /* bold */
+    '.st-bold{border-width:calc(var(--pp-bw)*2.6)}',
+    '.st-bold .pp-tag-top{background:currentColor;padding-bottom:.4em}.st-bold .pp-title span{-webkit-text-fill-color:#fff;border-color:#fff}',
+    '.st-bold .pp-name{border-bottom-width:calc(var(--pp-bw)*2.6)}',
+    '.pp-cut{width:2.6em;height:2.6em;bottom:0;background:linear-gradient(135deg,transparent 46%,currentColor 46%,currentColor 54%,transparent 54%,transparent 64%,currentColor 64%,currentColor 70%,transparent 70%)}',
+    '.pp-cut.bl{left:0;transform:scaleX(-1)}.pp-cut.br{right:0}',
+    /* minimal */
+    '.st-minimal .pp-title.ul span{border-bottom-width:.06em}'
   ].join('\n');
   function previewBox(t, size){ var z=SIZES[size]||SIZES.large; return '<div class="pp-prev" data-size="'+size+'" style="--pp-ratio:'+(z.h/z.w)+'"><div class="pp-prev-in">'+tagHtml(t,size)+'</div></div>'; }
   function fitPreviews(){ qa('.pp-prev',root).forEach(function(b){ var z=SIZES[b.dataset.size]||SIZES.large, inner=q('.pp-prev-in',b), w=b.clientWidth; if(!inner||!w) return; var px=z.w*96/25.4; inner.style.transform='scale('+(w/px)+')'; b.style.height=(z.h*96/25.4*(w/px))+'px'; }); }
@@ -38135,7 +38196,7 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
     var d=DB(); if(!d) return Promise.reject(new Error('مفيش اتصال بقاعدة البيانات'));
     var upd={}, now=Date.now(), by={ uid:uid(), username:uname() };
     list.forEach(function(t){ var k=t.id||d.ref('pricingTags').push().key; upd[k]={ barcode:String(t.barcode||''), name:String(t.name||'').trim(), price:num(t.price), oldPrice:num(t.oldPrice)>0?num(t.oldPrice):null, qty:Math.max(1,Math.round(num(t.qty)||1)),
-      size:SIZES[t.size]?t.size:settings.design.defaultSize, sheetPrice:t.sheetPrice!=null?num(t.sheetPrice):null, branch:'البازار', status:'ready', createdAt:t.createdAt||now, createdBy:t.createdBy||by, updatedAt:now, updatedBy:by }; });
+      size:SIZES[t.size]?t.size:settings.design.defaultSize, style:styleOf(t), sheetPrice:t.sheetPrice!=null?num(t.sheetPrice):null, branch:'البازار', status:'ready', createdAt:t.createdAt||now, createdBy:t.createdBy||by, updatedAt:now, updatedBy:by }; });
     return d.ref('pricingTags').update(upd).then(function(){ try{ SystemLog.add('PricingTagsSaved', String(list.length), 'حفظ تسعيرات: '+list.length, { count:list.length }); }catch(_){} return Object.keys(upd); });
   }
 
@@ -38192,7 +38253,7 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
     '<div class="pp-cam"><div id="ppReader"></div></div>'+(hint?'<p class="pp-hint">'+hint+'</p>':''); }
 
   /* ----- single ----- */
-  function newSingle(bc, hit){ var base=hit?hit.sellPrice:0; return { barcode:bc||'', name:hit?hit.name:'', sheetPrice:hit?base:null, qty:1, price:hit?applyRules(base,1):'', oldPrice:'', size:settings.design.defaultSize, found:!!hit }; }
+  function newSingle(bc, hit){ var base=hit?hit.sellPrice:0; return { barcode:bc||'', name:hit?hit.name:'', sheetPrice:hit?base:null, qty:1, price:hit?applyRules(base,1):'', oldPrice:'', size:settings.design.defaultSize, style:settings.design.style||'classic', found:!!hit }; }
   function singleView(){
     var s=single;
     return '<div class="pp-grid"><div class="pp-card">'+scanBar('USB سكانر: الماوس جوه الخانة وامسح. موبايل: دوس «مسح بالكاميرا».')+
@@ -38201,13 +38262,13 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
         '<label class="pp-f"><span>الكمية</span><input id="ppQty" class="pp-in" type="number" min="1" step="1" inputmode="numeric" value="'+esc(s.qty)+'"><small>1 = قطعة واحدة. 4 = «4 بـ»</small></label>'+
         '<label class="pp-f"><span>السعر</span><input id="ppPrice" class="pp-in big" type="number" min="0" step="any" inputmode="decimal" value="'+esc(s.price)+'"></label>'+
         '<div class="pp-f"><span>البدل (اختياري)</span>'+(s.oldOn?'<div class="pp-oldrow"><input id="ppOld" class="pp-in" type="number" min="0" step="any" inputmode="decimal" value="'+esc(s.oldPrice)+'" placeholder="السعر القديم"><button type="button" class="pp-btn ghost danger sm" data-act="oldoff">حذف البدل</button></div>':'<button type="button" class="pp-btn ghost sm" data-act="oldon">+ إضافة بدل</button>')+'</div>'+
-        '<label class="pp-f"><span>المقاس</span>'+sizeSel('ppSize', s.size)+'</label></div>'+
+        '<label class="pp-f"><span>المقاس</span>'+sizeSel('ppSize', s.size)+'</label><label class="pp-f"><span>الشكل</span>'+styleSel('ppStyle', styleOf(s))+'</label></div>'+
         '<div class="pp-actions"><button type="button" class="pp-btn ghost" data-act="sclear">مسح</button><button type="button" class="pp-btn ghost" data-act="sprint">طباعة دلوقتي</button><button type="button" class="pp-btn primary" data-act="ssave">حفظ التسعيرة</button></div>')
       :'<div class="pp-empty sm">امسح باركود المنتج علشان يظهر اسمه وسعره.</div>')+
       '</div><div class="pp-card pp-prevcard"><h3>شكل التسعيرة</h3>'+previewBox(s||{ name:'لارش ميلت كيك شيكولاتة بالكراميل', price:15, qty:4, oldPrice:20, barcode:'6224000000000' }, s?s.size:settings.design.defaultSize)+(s?'':'<p class="pp-hint">ده مثال. امسح منتج علشان تشوف تسعيرته.</p>')+'</div></div>';
   }
   function readSingle(){ if(!single) return; var g=function(id){ var e=q('#'+id,root); return e?e.value:undefined; };
-    if(g('ppName')!=null) single.name=g('ppName'); if(g('ppQty')!=null) single.qty=g('ppQty'); if(g('ppPrice')!=null) single.price=g('ppPrice'); if(g('ppOld')!=null) single.oldPrice=g('ppOld'); if(g('ppSize')) single.size=g('ppSize'); }
+    if(g('ppName')!=null) single.name=g('ppName'); if(g('ppQty')!=null) single.qty=g('ppQty'); if(g('ppPrice')!=null) single.price=g('ppPrice'); if(g('ppOld')!=null) single.oldPrice=g('ppOld'); if(g('ppSize')) single.size=g('ppSize'); if(g('ppStyle')) single.style=g('ppStyle'); }
   function onScan(code){
     if(tab==='single'){ var hit=lookup(code); single=newSingle(code, hit); render(); var f=q(hit?'#ppPrice':'#ppName',root); if(f && window.matchMedia('(pointer:fine)').matches) f.focus(); if(!hit) toast('الباركود مش في شيت البازار','warning'); }
     else if(tab==='batch'){ addBatch(code); }
@@ -38218,13 +38279,13 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
   function addBatch(code){
     var dup=batch.filter(function(x){ return x.barcode===code; })[0];
     if(dup){ toast('الصنف ده موجود في القايمة بالفعل','info',1800); flashRow(code); return; }
-    var hit=lookup(code); batch.unshift({ barcode:code, name:hit?hit.name:'', sheetPrice:hit?hit.sellPrice:null, qty:1, price:hit?applyRules(hit.sellPrice,1):'', oldPrice:'', size:(q('#ppBatchSize',root)||{}).value||settings.design.defaultSize, found:!!hit });
+    var hit=lookup(code); batch.unshift({ barcode:code, name:hit?hit.name:'', sheetPrice:hit?hit.sellPrice:null, qty:1, price:hit?applyRules(hit.sellPrice,1):'', oldPrice:'', size:(q('#ppBatchSize',root)||{}).value||settings.design.defaultSize, style:(q('#ppBatchStyle',root)||{}).value||settings.design.style||'classic', found:!!hit });
     keepBatch(); paintBatch(); flashRow(code); if(!hit) toast('الباركود '+code+' مش في الشيت — اكتب الاسم والسعر','warning',3000);
   }
   function flashRow(code){ var r=q('tr[data-bc="'+CSS.escape(code)+'"]',root); if(r){ r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash'); } }
   function batchView(){
     return '<div class="pp-card">'+scanBar('امسح الأصناف ورا بعض — كل صنف بيتضاف لوحده. الكاميرا بتفضل شغالة.')+
-      '<div class="pp-tools"><label class="pp-f inline"><span>مقاس الكل</span>'+sizeSel('ppBatchSize', settings.design.defaultSize)+'</label><span class="pp-count" id="ppBatchCount"></span>'+
+      '<div class="pp-tools"><label class="pp-f inline"><span>مقاس الكل</span>'+sizeSel('ppBatchSize', settings.design.defaultSize)+'</label><label class="pp-f inline"><span>شكل الكل</span>'+styleSel('ppBatchStyle', settings.design.style||'classic')+'</label><span class="pp-count" id="ppBatchCount"></span>'+
       '<button type="button" class="pp-btn ghost danger sm" data-act="bclear">مسح القايمة</button><button type="button" class="pp-btn primary" data-act="bsave">حفظ الكل</button></div>'+
       '<div class="pp-tblwrap"><table class="pp-tbl"><thead><tr><th>#</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>البدل</th><th>المقاس</th><th></th></tr></thead><tbody id="ppBatchBody"></tbody></table></div></div>';
   }
@@ -38299,8 +38360,9 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
   function chk(id, on, label){ return '<label class="pp-chk"><input type="checkbox" id="'+id+'"'+(on?' checked':'')+'> '+label+'</label>'; }
   var SAMPLE={ name:'لارش ميلت كيك شيكولاتة بالكراميل', price:15, qty:4, oldPrice:20, barcode:'6224000000000' };
   function previews(){ return '<div class="pp-prevs">'+Object.keys(SIZES).map(function(k){ return '<div><small>'+SIZES[k].l+'</small>'+previewBox(SAMPLE,k)+'</div>'; }).join('')+'</div>'; }
+  function gallery(cur){ return '<div class="pp-f wide"><span>شكل التسعيرة (الافتراضي — وتقدر تغيّره لكل تسعيرة)</span><div class="pp-gal">'+STYLES.map(function(x){ return '<label class="pp-galit'+(x[0]===cur?' on':'')+'"><input type="radio" name="dStyle" value="'+x[0]+'"'+(x[0]===cur?' checked':'')+'>'+previewBox(Object.assign({style:x[0]},SAMPLE),'large')+'<b>'+x[1]+'</b></label>'; }).join('')+'</div></div>'; }
   function designView(){ var d=settings.design;
-    return '<div class="pp-grid"><div class="pp-card"><h3>التصميم</h3><div class="pp-form">'+
+    return '<div class="pp-grid"><div class="pp-card"><h3>التصميم</h3><div class="pp-form">'+gallery(d.style||'classic')+
       f('العنوان اللي فوق','<input id="dTitle" class="pp-in" maxlength="60" value="'+esc(d.title)+'">',true)+
       '<div class="pp-f wide pp-chks">'+chk('dShowTitle',d.showTitle,'إظهار العنوان')+chk('dUnderline',d.underline,'خط تحت العنوان')+chk('dShowQr',d.showQr,'إظهار QR')+chk('dShowBc',d.showBarcode,'رقم الباركود صغير تحت')+'</div>'+
       f('الـ QR بيقرا إيه','<select id="dQrMode" class="pp-in"><option value="barcode"'+(d.qrMode!=='link'?' selected':'')+'>باركود المنتج (يتقري بكاميرا الموبايل أو سكانر USB)</option><option value="link"'+(d.qrMode==='link'?' selected':'')+'>رابط ثابت</option></select>')+
@@ -38330,7 +38392,7 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
       '<div class="pp-card"><h3>مثال</h3><ul class="pp-ex" id="ppRuleEx">'+ex+'</ul></div></div>'; }
   function readPart(part){
     var v=function(id){ var e=q('#'+id,root); return e?e.value:''; }, c=function(id){ var e=q('#'+id,root); return !!(e&&e.checked); };
-    if(part==='design') return { title:v('dTitle'), showTitle:c('dShowTitle'), underline:c('dUnderline'), showQr:c('dShowQr'), showBarcode:c('dShowBc'), qrMode:v('dQrMode'), qrLink:v('dQrLink').trim(), qrLabel:v('dQrLabel'), currency:v('dCur'), oldLabel:v('dOldL'), qtyWord:v('dQtyW'), border:num(v('dBorder')), borderColor:v('dBorderC'), ink:v('dInk'), defaultSize:v('dSize') };
+    if(part==='design') return { title:v('dTitle'), showTitle:c('dShowTitle'), underline:c('dUnderline'), showQr:c('dShowQr'), showBarcode:c('dShowBc'), qrMode:v('dQrMode'), qrLink:v('dQrLink').trim(), qrLabel:v('dQrLabel'), currency:v('dCur'), oldLabel:v('dOldL'), qtyWord:v('dQtyW'), border:num(v('dBorder')), borderColor:v('dBorderC'), ink:v('dInk'), defaultSize:v('dSize'), style:((q('input[name="dStyle"]:checked',root)||{}).value)||'classic' };
     if(part==='fonts') return { family:v('fFam'), title:num(v('fTitle')), name:num(v('fName')), price:num(v('fPrice')), old:num(v('fOld')), qty:num(v('fQty')), titleW:num(v('fTitleW')), nameW:num(v('fNameW')), priceW:num(v('fPriceW')) };
     return { adjust:v('rAdj'), adjustValue:num(v('rAdjV')), round:v('rRound'), roundDir:v('rDir'), qtyMode:v('rQty') };
   }
@@ -38361,10 +38423,11 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
   }
   function onChange(e){
     var t=e.target;
-    if(tab==='single' && t.id==='ppSize'){ readSingle(); var pv=q('.pp-prevcard .pp-prev',root); if(pv){ pv.outerHTML=previewBox(single, single.size); fitPreviews(); } return; }
-    if(tab==='batch'){ if(t.id==='ppBatchSize'){ batch.forEach(function(x){ x.size=t.value; }); keepBatch(); paintBatch(); return; } if(t.classList.contains('pp-rowsize')){ var tr=t.closest('tr[data-i]'); if(tr&&batch[+tr.dataset.i]){ batch[+tr.dataset.i].size=t.value; keepBatch(); } } return; }
+    if(tab==='single' && (t.id==='ppSize'||t.id==='ppStyle')){ readSingle(); var pv=q('.pp-prevcard .pp-prev',root); if(pv){ pv.outerHTML=previewBox(single, single.size); fitPreviews(); } return; }
+    if(tab==='batch'){ if(t.id==='ppBatchSize'){ batch.forEach(function(x){ x.size=t.value; }); keepBatch(); paintBatch(); return; } if(t.id==='ppBatchStyle'){ batch.forEach(function(x){ x.style=t.value; }); keepBatch(); return; } if(t.classList.contains('pp-rowsize')){ var tr=t.closest('tr[data-i]'); if(tr&&batch[+tr.dataset.i]){ batch[+tr.dataset.i].size=t.value; keepBatch(); } } return; }
     if(tab==='saved'){ if(t.id==='ppFSize'){ savedF.size=t.value; renderSaved(); return; } if(t.dataset.sel){ if(t.checked) sel[t.dataset.sel]=1; else delete sel[t.dataset.sel]; renderSaved(); return; }
       if(t.id==='ppSelAll'){ var l=savedList(); sel={}; if(t.checked) l.forEach(function(x){ sel[x.id]=1; }); renderSaved(); return; } }
+    if(t.name==='dStyle') qa('.pp-galit',root).forEach(function(l){ l.classList.toggle('on', !!q('input:checked',l)); });
     if(['design','fonts','rules'].indexOf(tab)>-1) livePreview(tab);
   }
   function onClick(e){
@@ -38389,7 +38452,7 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
     if(act==='delsel'){ var ids2=Object.keys(sel); if(!ids2.length||!confirm('هتحذف '+ids2.length+' تسعيرة؟')) return; var u={}; ids2.forEach(function(id){ u[id]=null; }); DB().ref('pricingTags').update(u).then(function(){ sel={}; toast('اتحذفت','success'); }); return; }
     if(b.dataset.del){ if(!confirm('حذف التسعيرة دي؟')) return; DB().ref('pricingTags/'+b.dataset.del).remove(); delete sel[b.dataset.del]; return; }
     if(b.dataset.edit){ var t=tags[b.dataset.edit]; if(!t) return; if(!canTab('single')){ toast('التعديل من «تسعيرة واحدة» — ملكش صلاحية عليها','info'); return; }
-      single={ id:t.id, barcode:t.barcode, name:t.name, sheetPrice:t.sheetPrice, qty:t.qty||1, price:t.price, oldPrice:num(t.oldPrice)>0?t.oldPrice:'', oldOn:num(t.oldPrice)>0, size:t.size||'large', found:t.sheetPrice!=null, createdAt:t.createdAt, createdBy:t.createdBy }; tab='single'; return render(); }
+      single={ id:t.id, barcode:t.barcode, name:t.name, sheetPrice:t.sheetPrice, qty:t.qty||1, price:t.price, oldPrice:num(t.oldPrice)>0?t.oldPrice:'', oldOn:num(t.oldPrice)>0, size:t.size||'large', style:styleOf(t), found:t.sheetPrice!=null, createdAt:t.createdAt, createdBy:t.createdBy }; tab='single'; return render(); }
     if(act==='savepart'){ var part=b.dataset.part; b.disabled=true; liveBackup=null; return saveSettings(part, readPart(part)).then(function(){ toast('اتحفظ — كل الأجهزة هتطبع بالشكل ده','success'); b.disabled=false; }).catch(function(x){ b.disabled=false; toast(x.message||String(x),'error'); }); }
     if(act==='reset'){ var p2=b.dataset.part; if(!confirm('ترجّع الإعدادات دي للأصل؟')) return; settings[p2]=JSON.parse(JSON.stringify(DEF[p2])); liveBackup=null; return saveSettings(p2, settings[p2]).then(function(){ render(); toast('رجعت للأصل','success'); }); }
   }
