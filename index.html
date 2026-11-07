@@ -38152,8 +38152,8 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
     h+='<div class="pp-name"><span>'+esc(t.name||'—')+'</span>'+(sk==='classic'?'<i class="pp-sep" aria-hidden="true"></i>':'')+'</div>';
     h+='<div class="pp-bottom"><div class="pp-row">';
     if(old>0) h+='<div class="pp-old"><span class="lbl">'+esc(sk==='logo'?'بدلاً من':d.oldLabel)+'</span><i>'+cur+'</i><b>'+esc(money(old))+'</b></div>'+(S.div?'<i class="pp-div" aria-hidden="true"></i>':'');
-    h+='<div class="pp-main">'+(S.rays?'<i class="pp-rays r-'+S.rays+'" aria-hidden="true">'+RAYS+'</i>':'')+'<span class="pp-cur">'+cur+'</span><span class="pp-price">'+esc(money(t.price))+'</span></div>';
-    if(qty>1) h+='<div class="pp-qty"><span>'+esc(d.qtyWord||'بـ')+'</span><b>'+qty+'</b></div>';
+    h+='<div class="pp-main">'+(S.rays?'<i class="pp-rays r-'+S.rays+'" aria-hidden="true">'+RAYS+'</i>':'')+'<span class="pp-cur">'+cur+'</span><span class="pp-price">'+esc(money(t.price))+'</span><span class="pp-bi">'+esc(d.qtyWord||'بـ')+'</span></div>';
+    if(qty>1) h+='<div class="pp-qty"><b>'+qty+'</b></div>';
     h+='</div></div>';
     if(sk==='logo') h+='<div class="pp-foot">'+esc(d.slogan||'علوش اسم متنساهوش')+'</div>';
     if(d.showBarcode) h+='<div class="pp-bc">'+esc(t.barcode||'')+'</div>';
@@ -38171,10 +38171,10 @@ body:not(.light-mode) #tab-pricing .pp-found.ok{ color:#4ade80; } body:not(.ligh
     '.t-slant .pp-title span{display:inline-block;background:currentColor;-webkit-text-fill-color:#fff;padding:.14em 1.4em .24em;clip-path:polygon(5% 0,100% 0,95% 100%,0 100%);transform:rotate(-4deg)}',
     '.pp-name{flex:0 0 auto;display:flex;align-items:center;justify-content:center;text-align:center;font-size:calc(1.55em*var(--pp-n));font-weight:var(--pp-nw);padding:.2em 1.3em .1em;min-height:2.2em;line-height:1.2}',
     '.pp-bottom{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:.4em 1.6em 1.1em;min-height:0}',
-    '.pp-row{display:flex;direction:ltr;align-items:baseline;gap:.55em}',
+    '.pp-row{display:flex;direction:ltr;align-items:baseline;gap:.55em}.pp-row>.pp-qty{margin-left:-.1em}',
     '.pp-main{position:relative;display:flex;align-items:baseline;gap:.08em;font-size:calc(7em*var(--pp-p)*var(--pp-pl,1));line-height:1}',
     '.pp-price{font-weight:var(--pp-pw);font-family:Arial,"Arial Black",Cairo,sans-serif;letter-spacing:-.03em;line-height:.9;font-variant-numeric:lining-nums}',
-    '.pp-cur{font-size:.3em;font-weight:900}',
+    '.pp-cur,.pp-bi{font-size:.3em;font-weight:900}.pp-bi{margin-left:.06em}',
     '.pp-qty{display:flex;align-items:baseline;gap:.18em;font-size:calc(2.5em*var(--pp-q)*var(--pp-pl,1));font-weight:900}',
     '.pp-qty b,.pp-old b{font-family:Arial,Cairo,sans-serif;font-weight:900;line-height:1}.pp-qty span{font-size:.62em}',
     '.pp-old{position:relative;display:flex;align-items:baseline;gap:.1em;font-size:calc(2.3em*var(--pp-o)*var(--pp-pl,1));font-weight:900}',
