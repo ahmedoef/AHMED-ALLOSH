@@ -4990,16 +4990,62 @@ body.dates-print-only #tab-products .dates-view-toolbar{display:none!important;}
   <div class="gd-card">
     <div class="gd-head">
       <span class="gd-kicker">دليل الموقع</span>
-      <h2>تعرّف على النظام في دقيقتين</h2>
-      <p>فيديو توضيحي يشرح أقسام علوش البازار وطريقة استخدامها.</p>
+      <h2>جولة في أقسام النظام</h2>
+      <p>اضغط السهمين تحت علشان تتنقل بين الأقسام.</p>
     </div>
-    <div class="gd-video">
-      <video id="gdVideo" controls playsinline preload="none" poster="https://ahmedoef.github.io/AHMED-ALLOSH/guide-poster.jpg">
-        <source src="https://ahmedoef.github.io/AHMED-ALLOSH/guide.mp4" type="video/mp4">
-        المتصفح لا يدعم تشغيل الفيديو.
-      </video>
+    <div class="gd-show" id="gdShow" tabindex="0" aria-roledescription="عرض شرائح" aria-label="جولة في أقسام النظام">
+      <div class="gd-stage">
+      <article class="gd-slide on" data-m="0" aria-hidden="false">
+        <div class="gd-txt"><span class="gd-k">01 — الرئيسية</span><h3>لوحة المتابعة</h3><p>حالة اليوم كلها في شاشة واحدة.</p><ul><li>حضور اليوم والتحويلات</li><li>عدّاد لكل قسم</li><li>تنبيهات «يحتاج انتباهك»</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم لوحة المتابعة" width="1280" height="800" decoding="async" src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/home.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="1" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">02 — التشغيل اليومي</span><h3>الحضور</h3><p>تسجيل الحضور والانصراف بكود الموظف.</p><ul><li>حساب التأخير تلقائيًا</li><li>مين داخل العمل دلوقتي</li><li>تصدير Excel</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم الحضور" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/attendance.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="2" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">03 — التشغيل اليومي</span><h3>الاستئذانات</h3><p>متابعة خروج ورجوع الموظفين خلال اليوم.</p><ul><li>مين في استئذان دلوقتي</li><li>ملخص لكل موظف</li><li>تنبيه عند تجاوز 35 دقيقة</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم الاستئذانات" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/breaks.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="3" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">04 — المخزون والأسعار</span><h3>التواريخ</h3><p>متابعة تواريخ صلاحية الأصناف.</p><ul><li>دفعات كل صنف</li><li>القريب من الانتهاء والمنتهي</li><li>حسب الفرع</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم التواريخ" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/products.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="0" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">05 — المخزون والأسعار</span><h3>المخازن</h3><p>أرصدة وحركة مخزن باب 40.</p><ul><li>فواتير التوريد</li><li>أرصدة الأصناف</li><li>حركة المخزن</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم المخازن" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/inventory.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="1" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">06 — المخزون والأسعار</span><h3>التحويلات</h3><p>نقل الأصناف بين الفروع والمخازن.</p><ul><li>تحويل جديد بالباركود</li><li>سجل التحويلات</li><li>تحليل التحويلات</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم التحويلات" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/transfers.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="2" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">07 — المخزون والأسعار</span><h3>الأسعار</h3><p>اعرف سعر أي صنف في ثانية.</p><ul><li>بحث بالباركود أو بالاسم</li><li>مقارنة الأسعار</li><li>مسح بالكاميرا</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم الأسعار" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/prices.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="3" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">08 — المخزون والأسعار</span><h3>التسعيرات</h3><p>اعمل تسعيرة الرف واطبعها.</p><ul><li>امسح الصنف يظهر اسمه وسعره</li><li>مقاسات: كبير، نص، ربع، شيلف، جدول</li><li>حفظ وطباعة</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم التسعيرات" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/pricing.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="0" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">09 — الموارد البشرية</span><h3>الموظفين</h3><p>بيانات ومواعيد كل الموظفين.</p><ul><li>بيانات كل موظف</li><li>المواعيد الرسمية</li><li>بحث وتصفية</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم الموظفين" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/empdata.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="1" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">10 — الموارد البشرية</span><h3>الجزاءات</h3><p>سجل الجزاءات وملخصها.</p><ul><li>جزاء تلقائي للغياب بدون إذن</li><li>ملخص لكل موظف</li><li>إعفاءات من الخصم</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم الجزاءات" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/penalties.jpg"></div></div>
+      </article>
+      <article class="gd-slide" data-m="2" aria-hidden="true">
+        <div class="gd-txt"><span class="gd-k">11 — الإدارة والنظام</span><h3>الإدارة</h3><p>المستخدمين والصلاحيات.</p><ul><li>إضافة مستخدم جديد</li><li>صلاحيات لكل قسم وتبويب</li><li>الجلسات والأجهزة</li></ul></div>
+        <div class="gd-shot"><div class="gd-bar"><i></i><i></i><i></i></div><div class="gd-img"><img alt="لقطة من قسم الإدارة" width="1280" height="800" decoding="async" data-src="https://ahmedoef.github.io/AHMED-ALLOSH/guide/users.jpg"></div></div>
+      </article>
+      </div>
+      <div class="gd-ctrl">
+        <button type="button" class="gd-arrow" data-d="-1" aria-label="السابق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <div class="gd-mid"><div class="gd-prog"><i id="gdProg"></i></div><span id="gdCount" aria-live="polite">1 / 11</span></div>
+        <button type="button" class="gd-arrow gd-next" data-d="1" aria-label="التالي"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      </div>
     </div>
-    <p class="gd-note">الفيديو يحتاج اتصال بالإنترنت. مدته دقيقة و45 ثانية، بدون صوت.</p>
   </div>
   <div class="gd-card">
     <h3>طريقة الاستخدام في 5 خطوات</h3>
@@ -38810,18 +38856,75 @@ html:root body .tab-btn[data-tab="guide"]{order:2}
 #tab-guide h2{margin:6px 0 6px;font-size:24px;font-weight:800;color:var(--ab-ink,#121419)}
 #tab-guide h3{margin:0 0 14px;font-size:18px;font-weight:800;color:var(--ab-ink,#121419)}
 #tab-guide p{margin:0;color:var(--ab-muted,#6B7280);font-size:15px;line-height:1.7}
-#tab-guide .gd-video{margin-top:16px;border-radius:14px;overflow:hidden;background:#0E0F13;aspect-ratio:16/9}
-#tab-guide video{display:block;width:100%;height:100%;background:#0E0F13}
-#tab-guide .gd-note{margin-top:10px;font-size:13px}
+#tab-guide .gd-show{margin-top:16px;outline:none;--e:cubic-bezier(.23,1,.32,1)}
+#tab-guide .gd-stage{display:grid;border-radius:16px;background:linear-gradient(135deg,#131418 0%,#1b1014 55%,#3a0d18 100%);padding:28px;overflow:hidden;touch-action:pan-y}
+#tab-guide .gd-slide{grid-area:1/1;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr);gap:28px;align-items:center;opacity:0;visibility:hidden;pointer-events:none;--dir:1}
+#tab-guide .gd-slide.on{opacity:1;visibility:visible;pointer-events:auto}
+#tab-guide .gd-txt{color:#fff;text-align:right}
+#tab-guide .gd-k{display:inline-block;color:#FF8DA0;font-weight:700;font-size:13px}
+#tab-guide .gd-txt h3{margin:8px 0 8px;font-size:34px;font-weight:800;color:#fff;line-height:1.25}
+#tab-guide .gd-txt p{color:#C9CCD4;font-size:16px}
+#tab-guide .gd-txt ul{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
+#tab-guide .gd-txt li{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;color:#F1F2F5;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+#tab-guide .gd-txt li::before{content:"";flex:0 0 8px;height:8px;border-radius:50%;background:#E2334C}
+#tab-guide .gd-shot{border-radius:12px;background:#2A2C33;box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden;transform-origin:50% 60%;will-change:transform,opacity}
+#tab-guide .gd-bar{height:26px;display:flex;align-items:center;gap:6px;padding:0 12px;direction:ltr}
+#tab-guide .gd-bar i{width:9px;height:9px;border-radius:50%;background:#FF5F57}#tab-guide .gd-bar i:nth-child(2){background:#FEBC2E}#tab-guide .gd-bar i:nth-child(3){background:#28C840}
+#tab-guide .gd-img{overflow:hidden;aspect-ratio:16/10;background:#F2F2F7}
+#tab-guide .gd-img img{display:block;width:100%;height:100%;object-fit:cover;transform-origin:100% 0}
+#tab-guide .gd-slide.on .gd-txt>*{animation:gdUp .55s var(--e) both}
+#tab-guide .gd-slide.on .gd-txt>:nth-child(2){animation-delay:.07s}#tab-guide .gd-slide.on .gd-txt>:nth-child(3){animation-delay:.14s}#tab-guide .gd-slide.on .gd-txt>:nth-child(4){animation-delay:.21s}
+#tab-guide .gd-slide.on .gd-txt li{animation:gdUp .5s var(--e) both}
+#tab-guide .gd-slide.on .gd-txt li:nth-child(1){animation-delay:.28s}#tab-guide .gd-slide.on .gd-txt li:nth-child(2){animation-delay:.36s}#tab-guide .gd-slide.on .gd-txt li:nth-child(3){animation-delay:.44s}
+#tab-guide .gd-slide.on[data-m="0"] .gd-shot{animation:gdSide .8s var(--e) both}
+#tab-guide .gd-slide.on[data-m="1"] .gd-shot{animation:gdRise .8s var(--e) both}
+#tab-guide .gd-slide.on[data-m="2"] .gd-shot{animation:gdZoom .8s var(--e) both}
+#tab-guide .gd-slide.on[data-m="3"] .gd-shot{animation:gdFlip .9s var(--e) both}
+#tab-guide .gd-slide.on .gd-img img{animation:gdKen 12s ease-out .7s both}
+#tab-guide .gd-slide.on[data-m="1"] .gd-img img,#tab-guide .gd-slide.on[data-m="3"] .gd-img img{animation-name:gdKen2}
+@keyframes gdUp{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
+@keyframes gdSide{from{opacity:0;transform:translate3d(calc(var(--dir)*-90px),0,0) rotate(calc(var(--dir)*-3deg)) scale(.94)}to{opacity:1;transform:none}}
+@keyframes gdRise{from{opacity:0;transform:translate3d(0,70px,0) rotate(2.5deg) scale(.92)}to{opacity:1;transform:none}}
+@keyframes gdZoom{from{opacity:0;transform:scale(.72)}60%{opacity:1}to{opacity:1;transform:none}}
+@keyframes gdFlip{from{opacity:0;transform:perspective(1200px) rotateY(calc(var(--dir)*38deg)) translate3d(calc(var(--dir)*-40px),0,0) scale(.9)}to{opacity:1;transform:perspective(1200px) rotateY(0) scale(1)}}
+@keyframes gdKen{from{transform:scale(1)}to{transform:scale(1.14)}}
+@keyframes gdKen2{from{transform:scale(1.14)}to{transform:scale(1)}}
+#tab-guide .gd-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:16px;direction:rtl}
+#tab-guide .gd-arrow{width:52px;height:52px;flex:0 0 52px;border-radius:50%;border:1px solid var(--ab-hair,rgba(60,60,67,.16));background:var(--ab-surface,#fff);color:var(--ab-ink,#121419);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .16s var(--e),background .16s,color .16s;-webkit-tap-highlight-color:transparent}
+#tab-guide .gd-arrow.gd-next{background:var(--ab-red,#C8102E);border-color:transparent;color:#fff}
+#tab-guide .gd-arrow svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+#tab-guide .gd-arrow:active{transform:scale(.92)}
+#tab-guide .gd-arrow:focus-visible,#tab-guide .gd-show:focus-visible{outline:3px solid var(--ab-red,#C8102E);outline-offset:3px}
+@media(hover:hover){#tab-guide .gd-arrow:hover{transform:scale(1.06)}}
+#tab-guide .gd-mid{flex:0 1 260px;display:flex;flex-direction:column;align-items:center;gap:6px}
+#tab-guide .gd-prog{width:100%;height:4px;border-radius:4px;background:var(--ab-fill,rgba(118,118,128,.16));overflow:hidden;direction:rtl}
+#tab-guide .gd-prog i{display:block;height:100%;width:9%;border-radius:4px;background:var(--ab-red,#C8102E);transition:width .4s var(--e)}
+#tab-guide #gdCount{font-size:13px;font-weight:700;color:var(--ab-muted,#6B7280);font-variant-numeric:tabular-nums;direction:ltr}
+@media(prefers-reduced-motion:reduce){#tab-guide .gd-slide.on .gd-shot,#tab-guide .gd-slide.on .gd-img img,#tab-guide .gd-slide.on .gd-txt>*,#tab-guide .gd-slide.on .gd-txt li{animation:gdFade .2s both}}
+@keyframes gdFade{from{opacity:0}to{opacity:1}}
 #tab-guide .gd-steps{list-style:none;margin:0;padding:0;counter-reset:gd;display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
 #tab-guide .gd-steps li{counter-increment:gd;background:var(--ab-fill,rgba(118,118,128,.12));border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
 #tab-guide .gd-steps li::before{content:counter(gd);width:28px;height:28px;border-radius:50%;background:var(--ab-red,#C8102E);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
 #tab-guide .gd-steps b{font-size:15px;color:var(--ab-ink,#121419)}
 #tab-guide .gd-steps span{font-size:13px;color:var(--ab-muted,#6B7280);line-height:1.6}
-@media(max-width:820px){#tab-guide .gd-card{padding:16px;border-radius:16px}#tab-guide h2{font-size:20px}#tab-guide .gd-steps{grid-template-columns:1fr}#tab-guide .gd-steps li{flex-direction:row;flex-wrap:wrap;align-items:center}#tab-guide .gd-steps span{flex:1 1 100%}}
+@media(max-width:820px){#tab-guide .gd-card{padding:16px;border-radius:16px}#tab-guide h2{font-size:20px}#tab-guide .gd-steps{grid-template-columns:1fr}#tab-guide .gd-stage{padding:16px}#tab-guide .gd-slide{grid-template-columns:1fr;gap:16px}#tab-guide .gd-shot{order:-1}#tab-guide .gd-txt h3{font-size:26px}#tab-guide .gd-steps li{flex-direction:row;flex-wrap:wrap;align-items:center}#tab-guide .gd-steps span{flex:1 1 100%}}
 </style>
 <script id="gd-js">
-(function(){ document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.tab-btn,.ab-home-btn'); if(!b||b.getAttribute('data-tab')==='guide') return; var v=document.getElementById('gdVideo'); if(v&&!v.paused){ try{ v.pause(); }catch(_){} } },true); })();
+(function(){
+  var root=document.getElementById('gdShow'); if(!root) return;
+  var sl=[].slice.call(root.querySelectorAll('.gd-slide')), n=sl.length, cur=0, prog=document.getElementById('gdProg'), cnt=document.getElementById('gdCount');
+  function load(i){ var im=sl[(i+n)%n].querySelector('img[data-src]'); if(im){ im.src=im.getAttribute('data-src'); im.removeAttribute('data-src'); } }
+  function go(i,dir){ i=(i+n)%n; if(i===cur) return; var o=sl[cur], s=sl[i];
+    o.classList.remove('on'); o.setAttribute('aria-hidden','true'); load(i); load(i+1); load(i-1);
+    s.style.setProperty('--dir', dir<0?-1:1); void s.offsetWidth; s.classList.add('on'); s.setAttribute('aria-hidden','false'); cur=i;
+    prog.style.width=((i+1)/n*100)+'%'; cnt.textContent=(i+1)+' / '+n; }
+  prog.style.width=(100/n)+'%'; load(1);
+  root.addEventListener('click',function(e){ var b=e.target.closest('.gd-arrow'); if(b) go(cur+(+b.getAttribute('data-d')), +b.getAttribute('data-d')); });
+  root.addEventListener('keydown',function(e){ if(e.key==='ArrowLeft'){ go(cur+1,1); e.preventDefault(); } else if(e.key==='ArrowRight'){ go(cur-1,-1); e.preventDefault(); } });
+  var x0=null,y0=0, st=root.querySelector('.gd-stage');
+  st.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
+  st.addEventListener('touchend',function(e){ if(x0===null) return; var dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0; x0=null; if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.5) go(cur+(dx>0?1:-1), dx>0?1:-1); },{passive:true});
+})();
 </script>
 </body>
 </html>
